@@ -27,4 +27,5 @@ def get_stats():
     print(f"{st_logs} status check")
 
 
-get_stats()
+if __name__ == "__main__":
+    get_stats()
