@@ -9,10 +9,10 @@ from typing import Callable
 redis_ = redis.Redis()
 
 
-def count(method: Callable) -> Callable:
+def cacher(method: Callable) -> Callable:
     """ Decortator """
     @wraps(method)
-    def wrapper(url):  # sourcery skip: use-named-expression
+    def wrapper(url) -> str:
         """ Wrapper """
         redis_.incr(f"count:{url}")
         cached_html = redis_.get(f"cached:{url}")
@@ -25,8 +25,7 @@ def count(method: Callable) -> Callable:
     return wrapper
 
 
-@count
+@cacher
 def get_page(url: str) -> str:
     """ Get the HTML of a  URL """
-    req = requests.get(url)
-    return req.text
+    return requests.get(url).text
