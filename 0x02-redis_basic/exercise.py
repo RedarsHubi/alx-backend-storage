@@ -21,6 +21,7 @@ def replay(method: Callable) -> None:
         print("{}(*{}) -> {}".format(name, input.decode("utf-8"),
                                      output.decode("utf-8")))
 
+
 def count_calls(method: Callable) -> Callable:
     '''
         Counts the number of times a method is called.
@@ -35,7 +36,8 @@ def count_calls(method: Callable) -> Callable:
         self._redis.incr(key)
         return method(self, *args, **kwargs)
     return wrapper
-  
+
+
 def call_history(method: Callable) -> Callable:
     '''
         stores the history of inputs and outputs for a particular function
@@ -54,9 +56,10 @@ def call_history(method: Callable) -> Callable:
 
     return wrapper
 
+
 class Cache:
     def __init__(self):
-        """store an instance of the Redis and flush the instance using flushdb"""
+        """store an instance of the Redis and flush the instance"""
         self._redis = redis.Redis()
         self._redis.flushdb()
 
@@ -68,7 +71,7 @@ class Cache:
         self._redis.set(key, data)
         return key
 
-    def get(self, key: str, fn: Callable = None) ->  Union[bytes, None]:
+    def get(self, key: str, fn: Callable = None) -> Union[bytes, None]:
         """ used to convert the data back to the desired format """
         value = self._redis.get(key)
         if value is None:
@@ -76,6 +79,7 @@ class Cache:
         if fn is not None:
             return fn(value)
         return value
+
     def get_str(self, key: str) -> Optional[str]:
         """parametrizes Cache.get with the correct conversion function"""
         return self.get(key, lambda x: x.decode('utf-8') if x else None)
