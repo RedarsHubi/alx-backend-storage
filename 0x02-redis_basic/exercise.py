@@ -4,17 +4,21 @@ Cache module
 """
 import redis
 import uuid
-from typing import Union, Callable, Optional
-import functools
+from typing import Union, Callable, Optional, Any
+from functools import wraps
 
 
 def count_calls(method: Callable) -> Callable:
-    """counts the number of times a method is called."""
-    
-    @functools.wraps(method)
-    def wrapper(self, *args, **kwargs):
-        """ wrapper function """
-        key = f"count:{method.__qualname__}"
+    '''
+        Counts the number of times a method is called.
+    '''
+
+    @wraps(method)
+    def wrapper(self, *args, **kwargs) -> Any:
+        '''
+            Wrapper function.
+        '''
+        key = method.__qualname__
         self._redis.incr(key)
         return method(self, *args, **kwargs)
     return wrapper
