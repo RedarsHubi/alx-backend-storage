@@ -10,12 +10,13 @@ import functools
 
 def count_calls(method: Callable) -> Callable:
     """counts the number of times a method is called."""
+    
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
+        """ wrapper function """
         key = f"count:{method.__qualname__}"
         self._redis.incr(key)
-        count = self._redis.get(key)
-        return method(self, *args, **kwargs), count
+        return method(self, *args, **kwargs)
     return wrapper
 
 class Cache:
@@ -46,6 +47,3 @@ class Cache:
     def get_int(self, key: int) -> Optional[int]:
         """parametrizes Cache.get with the correct conversion function"""
         return self.get(key, fn=int)
-
-        
-
