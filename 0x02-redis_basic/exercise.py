@@ -14,7 +14,8 @@ def count_calls(method: Callable) -> Callable:
     def wrapper(self, *args, **kwargs):
         key = f"count:{method.__qualname__}"
         self._redis.incr(key)
-        return method(self, *args, **kwargs)
+        count = self._redis.get(key)
+        return method(self, *args, **kwargs), count
     return wrapper
 
 class Cache:
