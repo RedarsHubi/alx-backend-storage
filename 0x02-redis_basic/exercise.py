@@ -32,7 +32,7 @@ def count_calls(method: Callable) -> Callable:
         '''
             Wrapper function.
         '''
-        key = method.__qualname__
+        key: str = method.__qualname__
         self._redis.incr(key)
         return method(self, *args, **kwargs)
     return wrapper
@@ -42,7 +42,7 @@ def call_history(method: Callable) -> Callable:
     '''
         stores the history of inputs and outputs for a particular function
     '''
-    key = method.__qualname__
+    key: str = method.__qualname__
     inputs = key + ":inputs"
     outputs = key + ":outputs"
 
@@ -58,7 +58,7 @@ def call_history(method: Callable) -> Callable:
 
 
 class Cache:
-    def __init__(self):
+    def __init__(self) -> None:
         """store an instance of the Redis and flush the instance"""
         self._redis = redis.Redis()
         self._redis.flushdb()
@@ -67,13 +67,13 @@ class Cache:
     @call_history
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """ takes a data argument and returns a string """
-        key = str(uuid.uuid4())
+        key: str = str(uuid.uuid4())
         self._redis.set(key, data)
         return key
 
     def get(self, key: str, fn: Callable = None) -> Union[bytes, None]:
         """ used to convert the data back to the desired format """
-        value = self._redis.get(key)
+        value: bytes = self._redis.get(key)
         if value is None:
             return None
         if fn is not None:
